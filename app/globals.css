@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+  --font-display: var(--font-display);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* The clock face font is driven by user settings via --font-clock. */
+.clock-face {
+  font-family: var(--font-clock, var(--font-sans)), system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Animated gradient background layer. */
+@keyframes auroraShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.bg-animated {
+  background-size: 220% 220%;
+  animation: auroraShift 18s ease infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-animated {
+    animation: none;
+  }
+}
+
+/* Subtle pulse used by the timer when running low / complete. */
+@keyframes softPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.animate-soft-pulse {
+  animation: softPulse 1s ease-in-out infinite;
+}
+
+/* Slim, unobtrusive scrollbars inside panels. */
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--fg) 25%, transparent) transparent;
+}
+.thin-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--fg) 25%, transparent);
+  border-radius: 9999px;
+}
+
+/* Range input theming using the active accent color. */
+input[type="range"].accent-range {
+  accent-color: var(--accent);
+}
