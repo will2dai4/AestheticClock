@@ -17,8 +17,9 @@ import { SettingsPanel } from "@/components/settings-panel";
 import { ClockView } from "@/components/views/clock-view";
 import { TimerView } from "@/components/views/timer-view";
 import { StopwatchView } from "@/components/views/stopwatch-view";
-import { SettingsIcon } from "@/components/icons";
+import { CompressIcon, ExpandIcon, SettingsIcon } from "@/components/icons";
 import { ChromeHiddenContext } from "@/components/focus-context";
+import { useFullscreen } from "@/hooks/use-fullscreen";
 
 export function ClockShell() {
   const [mode, setMode] = useState<ClockMode>("clock");
@@ -34,6 +35,7 @@ export function ClockShell() {
   const enlargeInFocus = useSettingsStore((s) => s.enlargeInFocus);
 
   const prefersDark = useSystemPrefersDark();
+  const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
   // In focus mode the chrome fades out, then reappears briefly on any activity.
   const [recentlyActive, setRecentlyActive] = useState(false);
@@ -133,19 +135,38 @@ export function ClockShell() {
         >
           Lumen
         </span>
-        <button
-          type="button"
-          onClick={() => setSettingsOpen(true)}
-          aria-label="Open settings"
-          className="grid h-10 w-10 place-items-center rounded-full border backdrop-blur-sm transition hover:scale-105 active:scale-95"
-          style={{
-            borderColor: "var(--border)",
-            background: "var(--surface)",
-            color: "var(--fg)",
-          }}
-        >
-          <SettingsIcon className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+            className="grid h-10 w-10 place-items-center rounded-full border backdrop-blur-sm transition hover:scale-105 active:scale-95"
+            style={{
+              borderColor: "var(--border)",
+              background: "var(--surface)",
+              color: "var(--fg)",
+            }}
+          >
+            {isFullscreen ? (
+              <CompressIcon className="h-5 w-5" />
+            ) : (
+              <ExpandIcon className="h-5 w-5" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setSettingsOpen(true)}
+            aria-label="Open settings"
+            className="grid h-10 w-10 place-items-center rounded-full border backdrop-blur-sm transition hover:scale-105 active:scale-95"
+            style={{
+              borderColor: "var(--border)",
+              background: "var(--surface)",
+              color: "var(--fg)",
+            }}
+          >
+            <SettingsIcon className="h-5 w-5" />
+          </button>
+        </div>
       </header>
 
       <main className="relative z-10 flex flex-1 items-center justify-center px-5 pb-4">
