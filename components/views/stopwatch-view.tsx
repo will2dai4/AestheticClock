@@ -4,8 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { formatDuration } from "@/lib/time";
 import { FlagIcon, PauseIcon, PlayIcon, ResetIcon } from "@/components/icons";
 import { ControlButton } from "@/components/views/timer-view";
+import { useChromeHidden } from "@/components/focus-context";
 
 export function StopwatchView() {
+  const chromeHidden = useChromeHidden();
   const [running, setRunning] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [laps, setLaps] = useState<number[]>([]); // cumulative ms at each lap
@@ -75,7 +77,13 @@ export function StopwatchView() {
         </span>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div
+        className="flex items-center gap-4 transition-opacity duration-500"
+        style={{
+          opacity: chromeHidden ? 0 : 1,
+          pointerEvents: chromeHidden ? "none" : "auto",
+        }}
+      >
         <ControlButton
           onClick={running ? addLap : reset}
           label={running ? "Lap" : "Reset"}
@@ -99,8 +107,13 @@ export function StopwatchView() {
 
       {laps.length > 0 && (
         <ul
-          className="thin-scroll max-h-52 w-full overflow-y-auto rounded-2xl border p-1"
-          style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+          className="thin-scroll max-h-52 w-full overflow-y-auto rounded-2xl border p-1 transition-opacity duration-500"
+          style={{
+            borderColor: "var(--border)",
+            background: "var(--surface)",
+            opacity: chromeHidden ? 0 : 1,
+            pointerEvents: chromeHidden ? "none" : "auto",
+          }}
         >
           {laps
             .map((cum, i) => ({ i, cum, delta: lapDeltas[i] }))

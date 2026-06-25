@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ACCENTS,
@@ -18,6 +18,7 @@ import { ClockView } from "@/components/views/clock-view";
 import { TimerView } from "@/components/views/timer-view";
 import { StopwatchView } from "@/components/views/stopwatch-view";
 import { SettingsIcon } from "@/components/icons";
+import { ChromeHiddenContext } from "@/components/focus-context";
 
 export function ClockShell() {
   const [mode, setMode] = useState<ClockMode>("clock");
@@ -28,8 +29,50 @@ export function ClockShell() {
   const fontId = useSettingsStore((s) => s.font);
   const background = useSettingsStore((s) => s.background);
   const hasHydrated = useSettingsStore((s) => s.hasHydrated);
+  const focusMode = useSettingsStore((s) => s.focusMode);
+  const setFocusMode = useSettingsStore((s) => s.setFocusMode);
 
   const prefersDark = useSystemPrefersDark();
+
+  // In focus mode the chrome fades out, then reappears briefly on any activity.
+  const [recentlyActive, setRecentlyActive] = useState(false);
+
+  useEffect(() => {
+    if (!focusMode) {
+      setRecentlyActive(false);
+      return;
+    }
+    let timeout: number;
+    const bump = () => {
+      setRecentlyActive(true);
+      window.clearTimeout(timeout);
+      timeout = window.setTimeout(() => setRecentlyActive(false), 2500);
+    };
+    bump();
+    const events = ["pointermove", "pointerdown", "keydown", "touchstart"];
+    events.forEach((e) => window.addEventListener(e, bump));
+    return () => {
+      window.clearTimeout(timeout);
+      events.forEach((e) => window.removeEventListener(e, bump));
+    };
+  }, [focusMode]);
+
+  // Keyboard shortcuts: "F" toggles focus mode, "Esc" exits it.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (e.key === "f" || e.key === "F") {
+        setFocusMode(!focusMode);
+      } else if (e.key === "Escape" && focusMode) {
+        setFocusMode(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [focusMode, setFocusMode]);
+
+  const chromeHidden = focusMode && !recentlyActive && !settingsOpen;
 
   const { style, isDark } = useMemo(() => {
     const resolvedThemeId =
@@ -59,11 +102,12 @@ export function ClockShell() {
   }, [theme, prefersDark, accentId, fontId, background]);
 
   return (
+    <ChromeHiddenContext.Provider value={chromeHidden}>
     <div
       style={style}
       className={`clock-face relative flex min-h-dvh w-full flex-col overflow-hidden transition-colors duration-500 ${
         background === "animated" ? "bg-animated" : ""
-      }`}
+      } ${chromeHidden ? "cursor-none" : ""}`}
     >
       {/* Soft vignette for depth, independent of the chosen background. */}
       <div
@@ -75,7 +119,13 @@ export function ClockShell() {
         }}
       />
 
-      <header className="relative z-10 flex items-center justify-between px-5 py-5 sm:px-8">
+      <header
+        className="relative z-10 flex items-center justify-between px-5 py-5 transition-opacity duration-500 sm:px-8"
+        style={{
+          opacity: chromeHidden ? 0 : 1,
+          pointerEvents: chromeHidden ? "none" : "auto",
+        }}
+      >
         <span
           className="select-none text-sm font-medium tracking-[0.3em] uppercase"
           style={{ color: "var(--muted)" }}
@@ -118,7 +168,13 @@ export function ClockShell() {
         )}
       </main>
 
-      <footer className="relative z-10 flex justify-center px-5 pb-7 sm:pb-9">
+      <footer
+        className="relative z-10 flex justify-center px-5 pb-7 transition-opacity duration-500 sm:pb-9"
+        style={{
+          opacity: chromeHidden ? 0 : 1,
+          pointerEvents: chromeHidden ? "none" : "auto",
+        }}
+      >
         <ModeSwitcher mode={mode} onChange={setMode} />
       </footer>
 
@@ -128,5 +184,6 @@ export function ClockShell() {
         isDark={isDark}
       />
     </div>
+    </ChromeHiddenContext.Provider>
   );
 }

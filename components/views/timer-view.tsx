@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSettingsStore } from "@/store/use-settings-store";
+import { useChromeHidden } from "@/components/focus-context";
 import { formatDuration, hmsToMs, pad } from "@/lib/time";
 import {
   MinusIcon,
@@ -23,6 +24,7 @@ const PRESETS = [
 
 export function TimerView() {
   const timerSound = useSettingsStore((s) => s.timerSound);
+  const chromeHidden = useChromeHidden();
 
   const [phase, setPhase] = useState<Phase>("idle");
   const [durationMs, setDurationMs] = useState(300_000); // configured length
@@ -118,7 +120,13 @@ export function TimerView() {
       </ProgressRing>
 
       {editing && (
-        <div className="flex flex-wrap items-center justify-center gap-2">
+        <div
+          className="flex flex-wrap items-center justify-center gap-2 transition-opacity duration-500"
+          style={{
+            opacity: chromeHidden ? 0 : 1,
+            pointerEvents: chromeHidden ? "none" : "auto",
+          }}
+        >
           {PRESETS.map((p) => (
             <button
               key={p.label}
@@ -137,7 +145,13 @@ export function TimerView() {
         </div>
       )}
 
-      <div className="flex items-center gap-4">
+      <div
+        className="flex items-center gap-4 transition-opacity duration-500"
+        style={{
+          opacity: chromeHidden ? 0 : 1,
+          pointerEvents: chromeHidden ? "none" : "auto",
+        }}
+      >
         {phase === "running" ? (
           <ControlButton onClick={pause} label="Pause" variant="solid">
             <PauseIcon className="h-6 w-6" />

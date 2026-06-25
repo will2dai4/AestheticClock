@@ -165,6 +165,32 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               </div>
             </Section>
 
+            <Section title="Focus">
+              <Toggle
+                label="Numbers only"
+                checked={s.focusMode}
+                onChange={s.setFocusMode}
+              />
+              <p className="text-xs" style={{ color: "var(--muted)" }}>
+                Hides everything but the time. Move the mouse or tap to reveal
+                controls. Press{" "}
+                <kbd
+                  className="rounded border px-1 py-0.5 text-[0.65rem] font-semibold"
+                  style={{ borderColor: "var(--border)" }}
+                >
+                  F
+                </kbd>{" "}
+                to toggle,{" "}
+                <kbd
+                  className="rounded border px-1 py-0.5 text-[0.65rem] font-semibold"
+                  style={{ borderColor: "var(--border)" }}
+                >
+                  Esc
+                </kbd>{" "}
+                to exit.
+              </p>
+            </Section>
+
             <Section title="Timer">
               <Toggle
                 label="Completion sound"
