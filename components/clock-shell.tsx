@@ -31,6 +31,7 @@ export function ClockShell() {
   const hasHydrated = useSettingsStore((s) => s.hasHydrated);
   const focusMode = useSettingsStore((s) => s.focusMode);
   const setFocusMode = useSettingsStore((s) => s.setFocusMode);
+  const enlargeInFocus = useSettingsStore((s) => s.enlargeInFocus);
 
   const prefersDark = useSystemPrefersDark();
 
@@ -148,24 +149,37 @@ export function ClockShell() {
       </header>
 
       <main className="relative z-10 flex flex-1 items-center justify-center px-5 pb-4">
-        {hasHydrated ? (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={mode}
-              initial={{ opacity: 0, y: 14, filter: "blur(6px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -14, filter: "blur(6px)" }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="flex w-full max-w-3xl items-center justify-center"
-            >
-              {mode === "clock" && <ClockView />}
-              {mode === "timer" && <TimerView />}
-              {mode === "stopwatch" && <StopwatchView />}
-            </motion.div>
-          </AnimatePresence>
-        ) : (
-          <div className="h-40" aria-hidden />
-        )}
+        <div
+          className="flex w-full items-center justify-center transition-transform duration-500 ease-out"
+          style={{
+            transform: `scale(${
+              chromeHidden && enlargeInFocus
+                ? mode === "stopwatch"
+                  ? 1.85
+                  : 1.22
+                : 1
+            })`,
+          }}
+        >
+          {hasHydrated ? (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={mode}
+                initial={{ opacity: 0, y: 14, filter: "blur(6px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -14, filter: "blur(6px)" }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="flex w-full max-w-3xl items-center justify-center"
+              >
+                {mode === "clock" && <ClockView />}
+                {mode === "timer" && <TimerView />}
+                {mode === "stopwatch" && <StopwatchView />}
+              </motion.div>
+            </AnimatePresence>
+          ) : (
+            <div className="h-40" aria-hidden />
+          )}
+        </div>
       </main>
 
       <footer

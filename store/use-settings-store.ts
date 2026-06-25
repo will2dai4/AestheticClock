@@ -26,6 +26,8 @@ export interface SettingsState {
   timerSound: boolean;
   /** Distraction-free mode: fades out all chrome, leaving only the numbers. */
   focusMode: boolean;
+  /** Scale the time up when the chrome is hidden in focus mode. */
+  enlargeInFocus: boolean;
 
   // Hydration flag so the UI can avoid SSR mismatches.
   hasHydrated: boolean;
@@ -40,6 +42,7 @@ export interface SettingsState {
   setShowDate: (v: boolean) => void;
   setTimerSound: (v: boolean) => void;
   setFocusMode: (v: boolean) => void;
+  setEnlargeInFocus: (v: boolean) => void;
   setHasHydrated: (v: boolean) => void;
   reset: () => void;
 }
@@ -55,6 +58,7 @@ const DEFAULTS = {
   showDate: true,
   timerSound: true,
   focusMode: false,
+  enlargeInFocus: true,
 };
 
 export const useSettingsStore = create<SettingsState>()(
@@ -73,6 +77,7 @@ export const useSettingsStore = create<SettingsState>()(
       setShowDate: (showDate) => set({ showDate }),
       setTimerSound: (timerSound) => set({ timerSound }),
       setFocusMode: (focusMode) => set({ focusMode }),
+      setEnlargeInFocus: (enlargeInFocus) => set({ enlargeInFocus }),
       setHasHydrated: (hasHydrated) => set({ hasHydrated }),
       reset: () => set({ ...DEFAULTS }),
     }),

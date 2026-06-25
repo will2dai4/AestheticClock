@@ -171,6 +171,11 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                 checked={s.focusMode}
                 onChange={s.setFocusMode}
               />
+              <Toggle
+                label="Enlarge time"
+                checked={s.enlargeInFocus}
+                onChange={s.setEnlargeInFocus}
+              />
               <p className="text-xs" style={{ color: "var(--muted)" }}>
                 Hides everything but the time. Move the mouse or tap to reveal
                 controls. Press{" "}
