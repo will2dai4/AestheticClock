@@ -101,11 +101,14 @@ export function TimerView() {
         ) : (
           <div className="flex flex-col items-center">
             <span
-              className={`tabular-nums leading-none ${
+              className={`tabular-nums leading-none whitespace-nowrap ${
                 phase === "done" ? "animate-soft-pulse" : ""
               }`}
               style={{
-                fontSize: "clamp(2.6rem, 9vw, 5rem)",
+                fontSize:
+                  main.length > 5
+                    ? "clamp(1.9rem, 7vw, 3.6rem)"
+                    : "clamp(2.4rem, 8.5vw, 4.6rem)",
                 fontWeight: 600,
                 color: phase === "done" ? "var(--accent)" : "var(--fg)",
               }}
@@ -230,7 +233,7 @@ function Segment({
       </button>
       <span
         className="tabular-nums leading-none"
-        style={{ fontSize: "clamp(2.2rem, 8vw, 4rem)", fontWeight: 600 }}
+        style={{ fontSize: "clamp(1.7rem, 6vw, 3rem)", fontWeight: 600 }}
       >
         {pad(value)}
       </span>
@@ -257,7 +260,7 @@ function Sep() {
   return (
     <span
       className="pb-9 leading-none"
-      style={{ fontSize: "clamp(2rem, 7vw, 3.5rem)", color: "var(--muted)" }}
+      style={{ fontSize: "clamp(1.5rem, 5vw, 2.6rem)", color: "var(--muted)" }}
     >
       :
     </span>
@@ -282,7 +285,7 @@ export function ProgressRing({
   return (
     <div
       className="relative grid place-items-center"
-      style={{ width: "min(78vw, 300px)", aspectRatio: "1 / 1" }}
+      style={{ width: "min(88vw, 380px)", aspectRatio: "1 / 1" }}
     >
       <svg
         viewBox={`0 0 ${size} ${size}`}
@@ -311,7 +314,10 @@ export function ProgressRing({
           style={{ transition: "stroke-dashoffset 0.2s linear" }}
         />
       </svg>
-      <div className="relative z-10 grid place-items-center px-6 text-center">
+      <div
+        className="relative z-10 grid place-items-center text-center"
+        style={{ width: "72%" }}
+      >
         {children}
       </div>
     </div>
