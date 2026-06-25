@@ -24,6 +24,8 @@ export interface SettingsState {
 
   // Behavior
   timerSound: boolean;
+  /** Hold a screen wake lock while the timer/stopwatch is running. */
+  keepAwake: boolean;
   /** Distraction-free mode: fades out all chrome, leaving only the numbers. */
   focusMode: boolean;
   /** Scale the time up when the chrome is hidden in focus mode. */
@@ -41,6 +43,7 @@ export interface SettingsState {
   setShowSeconds: (v: boolean) => void;
   setShowDate: (v: boolean) => void;
   setTimerSound: (v: boolean) => void;
+  setKeepAwake: (v: boolean) => void;
   setFocusMode: (v: boolean) => void;
   setEnlargeInFocus: (v: boolean) => void;
   setHasHydrated: (v: boolean) => void;
@@ -57,6 +60,7 @@ const DEFAULTS = {
   showSeconds: true,
   showDate: true,
   timerSound: true,
+  keepAwake: true,
   focusMode: false,
   enlargeInFocus: true,
 };
@@ -76,6 +80,7 @@ export const useSettingsStore = create<SettingsState>()(
       setShowSeconds: (showSeconds) => set({ showSeconds }),
       setShowDate: (showDate) => set({ showDate }),
       setTimerSound: (timerSound) => set({ timerSound }),
+      setKeepAwake: (keepAwake) => set({ keepAwake }),
       setFocusMode: (focusMode) => set({ focusMode }),
       setEnlargeInFocus: (enlargeInFocus) => set({ enlargeInFocus }),
       setHasHydrated: (hasHydrated) => set({ hasHydrated }),

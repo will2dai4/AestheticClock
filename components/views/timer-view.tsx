@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSettingsStore } from "@/store/use-settings-store";
 import { useChromeHidden } from "@/components/focus-context";
+import { useWakeLock } from "@/hooks/use-wake-lock";
 import { formatDuration, hmsToMs, pad } from "@/lib/time";
 import {
   MinusIcon,
@@ -24,12 +25,15 @@ const PRESETS = [
 
 export function TimerView() {
   const timerSound = useSettingsStore((s) => s.timerSound);
+  const keepAwake = useSettingsStore((s) => s.keepAwake);
   const chromeHidden = useChromeHidden();
 
   const [phase, setPhase] = useState<Phase>("idle");
   const [durationMs, setDurationMs] = useState(300_000); // configured length
   const [remainingMs, setRemainingMs] = useState(300_000);
   const deadlineRef = useRef<number>(0);
+
+  useWakeLock(keepAwake && phase === "running");
 
   // Drive the countdown from a deadline so it stays accurate when backgrounded.
   useEffect(() => {

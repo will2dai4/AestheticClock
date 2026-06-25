@@ -5,14 +5,19 @@ import { formatDuration } from "@/lib/time";
 import { FlagIcon, PauseIcon, PlayIcon, ResetIcon } from "@/components/icons";
 import { ControlButton } from "@/components/views/timer-view";
 import { useChromeHidden } from "@/components/focus-context";
+import { useWakeLock } from "@/hooks/use-wake-lock";
+import { useSettingsStore } from "@/store/use-settings-store";
 
 export function StopwatchView() {
   const chromeHidden = useChromeHidden();
+  const keepAwake = useSettingsStore((s) => s.keepAwake);
   const [running, setRunning] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [laps, setLaps] = useState<number[]>([]); // cumulative ms at each lap
   const accumulatedRef = useRef(0);
   const startRef = useRef(0);
+
+  useWakeLock(keepAwake && running);
 
   useEffect(() => {
     if (!running) return;

@@ -196,11 +196,16 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               </p>
             </Section>
 
-            <Section title="Timer">
+            <Section title="Timer & stopwatch">
               <Toggle
                 label="Completion sound"
                 checked={s.timerSound}
                 onChange={s.setTimerSound}
+              />
+              <Toggle
+                label="Keep screen awake while running"
+                checked={s.keepAwake}
+                onChange={s.setKeepAwake}
               />
             </Section>
 
