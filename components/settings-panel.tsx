@@ -62,12 +62,6 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
             <Section title="Theme">
               <div className="grid grid-cols-2 gap-2">
-                <SwatchButton
-                  label="System"
-                  active={s.theme === "system"}
-                  onClick={() => s.setTheme("system")}
-                  preview="linear-gradient(135deg,#0b0d12 50%,#f6f7fb 50%)"
-                />
                 {THEMES.map((t) => (
                   <SwatchButton
                     key={t.id}
@@ -85,11 +79,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               <div className="flex flex-wrap gap-2.5">
                 {ACCENTS.map((a) => {
                   const active = s.accent === a.id;
-                  const color =
-                    a.value ||
-                    (s.theme !== "system"
-                      ? getTheme(s.theme).palette.accent
-                      : "var(--accent)");
+                  const color = a.value || getTheme(s.theme).palette.accent;
                   return (
                     <button
                       key={a.id}

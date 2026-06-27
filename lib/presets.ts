@@ -4,7 +4,6 @@
  */
 
 export type ThemeId =
-  | "system"
   | "midnight"
   | "daylight"
   | "mocha"
@@ -32,7 +31,7 @@ export interface ThemePalette {
 }
 
 export interface ThemeOption {
-  id: Exclude<ThemeId, "system">;
+  id: ThemeId;
   label: string;
   palette: ThemePalette;
 }
@@ -124,10 +123,7 @@ export const THEMES: ThemeOption[] = [
   },
 ];
 
-export const DEFAULT_LIGHT_THEME: Exclude<ThemeId, "system"> = "daylight";
-export const DEFAULT_DARK_THEME: Exclude<ThemeId, "system"> = "midnight";
-
-export function getTheme(id: Exclude<ThemeId, "system">): ThemeOption {
+export function getTheme(id: ThemeId): ThemeOption {
   return THEMES.find((t) => t.id === id) ?? THEMES[0];
 }
 

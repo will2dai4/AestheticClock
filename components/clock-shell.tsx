@@ -2,16 +2,8 @@
 
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  ACCENTS,
-  buildBackground,
-  DEFAULT_DARK_THEME,
-  DEFAULT_LIGHT_THEME,
-  getFont,
-  getTheme,
-} from "@/lib/presets";
+import { ACCENTS, buildBackground, getFont, getTheme } from "@/lib/presets";
 import { useSettingsStore, type ClockMode } from "@/store/use-settings-store";
-import { useSystemPrefersDark } from "@/hooks/use-system-theme";
 import { ModeSwitcher } from "@/components/mode-switcher";
 import { SettingsPanel } from "@/components/settings-panel";
 import { ClockView } from "@/components/views/clock-view";
@@ -34,7 +26,6 @@ export function ClockShell() {
   const setFocusMode = useSettingsStore((s) => s.setFocusMode);
   const enlargeInFocus = useSettingsStore((s) => s.enlargeInFocus);
 
-  const prefersDark = useSystemPrefersDark();
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
   // In focus mode the chrome fades out, then reappears briefly on any activity.
@@ -78,13 +69,7 @@ export function ClockShell() {
   const chromeHidden = focusMode && !recentlyActive && !settingsOpen;
 
   const { style, isDark } = useMemo(() => {
-    const resolvedThemeId =
-      theme === "system"
-        ? prefersDark
-          ? DEFAULT_DARK_THEME
-          : DEFAULT_LIGHT_THEME
-        : theme;
-    const { palette } = getTheme(resolvedThemeId);
+    const { palette } = getTheme(theme);
 
     const accentValue =
       ACCENTS.find((a) => a.id === accentId)?.value || palette.accent;
@@ -102,7 +87,7 @@ export function ClockShell() {
     };
 
     return { style: css, isDark: palette.isDark };
-  }, [theme, prefersDark, accentId, fontId, background]);
+  }, [theme, accentId, fontId, background]);
 
   return (
     <ChromeHiddenContext.Provider value={chromeHidden}>

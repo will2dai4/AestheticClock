@@ -1,10 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type {
-  BackgroundId,
-  FontId,
-  LayoutId,
-  ThemeId,
+import {
+  THEMES,
+  type BackgroundId,
+  type FontId,
+  type LayoutId,
+  type ThemeId,
 } from "@/lib/presets";
 
 export type ClockMode = "clock" | "timer" | "stopwatch";
@@ -51,7 +52,7 @@ export interface SettingsState {
 }
 
 const DEFAULTS = {
-  theme: "system" as ThemeId,
+  theme: "midnight" as ThemeId,
   accent: "default",
   font: "display" as FontId,
   background: "gradient" as BackgroundId,
@@ -90,6 +91,10 @@ export const useSettingsStore = create<SettingsState>()(
       name: "lumen-clock-settings",
       partialize: ({ hasHydrated: _hasHydrated, ...rest }) => rest,
       onRehydrateStorage: () => (state) => {
+        // Coerce any removed/invalid theme (e.g. the old "system") to a default.
+        if (state && !THEMES.some((t) => t.id === state.theme)) {
+          state.theme = DEFAULTS.theme;
+        }
         state?.setHasHydrated(true);
       },
     }
