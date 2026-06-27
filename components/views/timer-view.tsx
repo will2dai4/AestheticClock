@@ -120,7 +120,7 @@ export function TimerView() {
               className="mt-2 text-xs font-semibold tracking-[0.35em] uppercase"
               style={{ color: "var(--muted)" }}
             >
-              {phase === "done" ? "Time's up" : phase}
+              {phase === "done" ? "Time's up" : "Timer"}
             </span>
           </div>
         )}

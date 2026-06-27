@@ -78,7 +78,7 @@ export function StopwatchView() {
           className="mt-2 text-xs font-semibold tracking-[0.35em] uppercase"
           style={{ color: "var(--muted)" }}
         >
-          {running ? "Running" : elapsed > 0 ? "Paused" : "Stopwatch"}
+          Stopwatch
         </span>
       </div>
 
