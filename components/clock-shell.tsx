@@ -12,6 +12,9 @@ import { StopwatchView } from "@/components/views/stopwatch-view";
 import { CompressIcon, ExpandIcon, SettingsIcon } from "@/components/icons";
 import { ChromeHiddenContext } from "@/components/focus-context";
 import { useFullscreen } from "@/hooks/use-fullscreen";
+import { useWakeLock } from "@/hooks/use-wake-lock";
+import { useTimerStore } from "@/store/use-timer-store";
+import { useStopwatchStore } from "@/store/use-stopwatch-store";
 
 export function ClockShell() {
   const [mode, setMode] = useState<ClockMode>("clock");
@@ -27,6 +30,13 @@ export function ClockShell() {
   const enlargeInFocus = useSettingsStore((s) => s.enlargeInFocus);
 
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+
+  // Hold the wake lock whenever the timer or stopwatch is running, regardless
+  // of which view is currently displayed.
+  const keepAwake = useSettingsStore((s) => s.keepAwake);
+  const timerRunning = useTimerStore((s) => s.phase === "running");
+  const stopwatchRunning = useStopwatchStore((s) => s.running);
+  useWakeLock(keepAwake && (timerRunning || stopwatchRunning));
 
   // In focus mode the chrome fades out, then reappears briefly on any activity.
   const [recentlyActive, setRecentlyActive] = useState(false);
