@@ -1,54 +1,22 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
 import { formatDuration } from "@/lib/time";
 import { FlagIcon, PauseIcon, PlayIcon, ResetIcon } from "@/components/icons";
 import { ControlButton } from "@/components/views/timer-view";
 import { useChromeHidden } from "@/components/focus-context";
-import { useWakeLock } from "@/hooks/use-wake-lock";
-import { useSettingsStore } from "@/store/use-settings-store";
+import { useStopwatchStore } from "@/store/use-stopwatch-store";
 
 export function StopwatchView() {
   const chromeHidden = useChromeHidden();
-  const keepAwake = useSettingsStore((s) => s.keepAwake);
-  const [running, setRunning] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
-  const [laps, setLaps] = useState<number[]>([]); // cumulative ms at each lap
-  const accumulatedRef = useRef(0);
-  const startRef = useRef(0);
 
-  useWakeLock(keepAwake && running);
-
-  useEffect(() => {
-    if (!running) return;
-    const tick = () =>
-      setElapsed(accumulatedRef.current + (Date.now() - startRef.current));
-    tick();
-    const id = window.setInterval(tick, 31);
-    return () => window.clearInterval(id);
-  }, [running]);
-
-  const toggle = useCallback(() => {
-    if (running) {
-      accumulatedRef.current += Date.now() - startRef.current;
-      setRunning(false);
-    } else {
-      startRef.current = Date.now();
-      setRunning(true);
-    }
-  }, [running]);
-
-  const reset = useCallback(() => {
-    setRunning(false);
-    accumulatedRef.current = 0;
-    startRef.current = 0;
-    setElapsed(0);
-    setLaps([]);
-  }, []);
-
-  const addLap = useCallback(() => {
-    setLaps((prev) => [...prev, elapsed]);
-  }, [elapsed]);
+  // State + timing live in a store so the stopwatch keeps running when the
+  // view is unmounted (switching to the clock or timer).
+  const running = useStopwatchStore((s) => s.running);
+  const elapsed = useStopwatchStore((s) => s.elapsed);
+  const laps = useStopwatchStore((s) => s.laps);
+  const toggle = useStopwatchStore((s) => s.toggle);
+  const reset = useStopwatchStore((s) => s.reset);
+  const addLap = useStopwatchStore((s) => s.lap);
 
   const { main, centis } = formatDuration(elapsed, {
     showCentis: true,

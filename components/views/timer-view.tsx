@@ -1,9 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useSettingsStore } from "@/store/use-settings-store";
 import { useChromeHidden } from "@/components/focus-context";
-import { useWakeLock } from "@/hooks/use-wake-lock";
+import { useTimerStore } from "@/store/use-timer-store";
 import { formatDuration, hmsToMs, pad } from "@/lib/time";
 import {
   MinusIcon,
@@ -12,8 +10,6 @@ import {
   PlusIcon,
   ResetIcon,
 } from "@/components/icons";
-
-type Phase = "idle" | "running" | "paused" | "done";
 
 const PRESETS = [
   { label: "1m", ms: 60_000 },
@@ -24,66 +20,17 @@ const PRESETS = [
 ];
 
 export function TimerView() {
-  const timerSound = useSettingsStore((s) => s.timerSound);
-  const keepAwake = useSettingsStore((s) => s.keepAwake);
   const chromeHidden = useChromeHidden();
 
-  const [phase, setPhase] = useState<Phase>("idle");
-  const [durationMs, setDurationMs] = useState(300_000); // configured length
-  const [remainingMs, setRemainingMs] = useState(300_000);
-  const deadlineRef = useRef<number>(0);
-
-  useWakeLock(keepAwake && phase === "running");
-
-  // Drive the countdown from a deadline so it stays accurate when backgrounded.
-  useEffect(() => {
-    if (phase !== "running") return;
-
-    const tick = () => {
-      const remaining = deadlineRef.current - Date.now();
-      if (remaining <= 0) {
-        setRemainingMs(0);
-        setPhase("done");
-        return;
-      }
-      setRemainingMs(remaining);
-    };
-
-    tick();
-    const id = window.setInterval(tick, 50);
-    return () => window.clearInterval(id);
-  }, [phase]);
-
-  // Audible + vibration feedback on completion.
-  useEffect(() => {
-    if (phase !== "done") return;
-    if (timerSound) playChime();
-    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
-      navigator.vibrate?.([120, 80, 120]);
-    }
-  }, [phase, timerSound]);
-
-  const start = useCallback(() => {
-    if (durationMs <= 0) return;
-    const base = phase === "paused" ? remainingMs : durationMs;
-    deadlineRef.current = Date.now() + base;
-    if (phase !== "paused") setRemainingMs(durationMs);
-    setPhase("running");
-  }, [durationMs, phase, remainingMs]);
-
-  const pause = useCallback(() => setPhase("paused"), []);
-
-  const reset = useCallback(() => {
-    setPhase("idle");
-    setRemainingMs(durationMs);
-  }, [durationMs]);
-
-  const applyDuration = useCallback((ms: number) => {
-    const clamped = Math.min(Math.max(ms, 0), 99 * 3600_000);
-    setDurationMs(clamped);
-    setRemainingMs(clamped);
-    setPhase("idle");
-  }, []);
+  // State + timing live in a store so the countdown keeps running when the
+  // timer view is unmounted (switching to the clock or stopwatch).
+  const phase = useTimerStore((s) => s.phase);
+  const durationMs = useTimerStore((s) => s.durationMs);
+  const remainingMs = useTimerStore((s) => s.remainingMs);
+  const start = useTimerStore((s) => s.start);
+  const pause = useTimerStore((s) => s.pause);
+  const reset = useTimerStore((s) => s.reset);
+  const setDuration = useTimerStore((s) => s.setDuration);
 
   const editing = phase === "idle";
   const progress =
@@ -97,7 +44,7 @@ export function TimerView() {
     <div className="flex w-full flex-col items-center gap-8">
       <ProgressRing progress={editing ? 1 : progress} pulse={phase === "done"}>
         {editing ? (
-          <DurationEditor durationMs={durationMs} onChange={applyDuration} />
+          <DurationEditor durationMs={durationMs} onChange={setDuration} />
         ) : (
           <div className="flex flex-col items-center">
             <span
@@ -138,7 +85,7 @@ export function TimerView() {
             <button
               key={p.label}
               type="button"
-              onClick={() => applyDuration(p.ms)}
+              onClick={() => setDuration(p.ms)}
               className="rounded-full border px-4 py-2 text-sm font-medium transition hover:scale-105 active:scale-95"
               style={{
                 borderColor: "var(--border)",
@@ -358,32 +305,4 @@ export function ControlButton({
       {children}
     </button>
   );
-}
-
-/** Plays a short, pleasant three-note chime via the Web Audio API. */
-function playChime() {
-  try {
-    const AudioCtx =
-      window.AudioContext ||
-      (window as unknown as { webkitAudioContext: typeof AudioContext })
-        .webkitAudioContext;
-    const ctx = new AudioCtx();
-    const notes = [880, 1108.73, 1318.51];
-    notes.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.value = freq;
-      const t = ctx.currentTime + i * 0.18;
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(0.25, t + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
-      osc.connect(gain).connect(ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.55);
-    });
-    setTimeout(() => ctx.close(), 1500);
-  } catch {
-    // Audio not available — silently ignore.
-  }
 }
