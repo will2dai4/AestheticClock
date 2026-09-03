@@ -15,30 +15,23 @@ export function SettingsScreen() {
 
   return (
     <ThemeSurface>
-      <header
-        className="sticky top-0 z-20 flex items-center gap-3 border-b px-5 py-4 sm:px-8"
-        style={{
-          borderColor: "var(--border)",
-          background: "color-mix(in srgb, var(--surface) 60%, transparent)",
-          backdropFilter: "blur(16px)",
-        }}
-      >
-        <Link
-          href="/"
-          aria-label="Back to clock"
-          className="-ml-2 grid h-10 w-10 shrink-0 place-items-center transition hover:scale-110 active:scale-95"
-        >
-          <ArrowLeftIcon className="h-5 w-5" />
-        </Link>
-        <h1 className="text-lg font-semibold tracking-tight">Customize</h1>
-      </header>
-
       <motion.main
         className="relative z-10 mx-auto w-full max-w-4xl px-5 py-8 sm:px-8"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       >
+        <div className="mb-7 flex items-center gap-3">
+          <Link
+            href="/"
+            aria-label="Back to clock"
+            className="-ml-2 grid h-10 w-10 shrink-0 place-items-center transition hover:scale-110 active:scale-95"
+          >
+            <ArrowLeftIcon className="h-5 w-5" />
+          </Link>
+          <h1 className="text-lg font-semibold tracking-tight">Settings</h1>
+        </div>
+
         <div
           className="transition-opacity duration-300"
           style={{ opacity: hasHydrated ? 1 : 0 }}
