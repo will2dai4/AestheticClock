@@ -55,14 +55,14 @@ const DEFAULTS = {
   theme: "midnight" as ThemeId,
   accent: "default",
   font: "display" as FontId,
-  background: "gradient" as BackgroundId,
+  background: "solid" as BackgroundId,
   layout: "digital" as LayoutId,
   hour12: false,
   showSeconds: true,
   showDate: true,
   timerSound: true,
   keepAwake: true,
-  focusMode: false,
+  focusMode: true,
   enlargeInFocus: true,
 };
 
