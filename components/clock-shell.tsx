@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ACCENTS, buildBackground, getFont, getTheme } from "@/lib/presets";
 import { useSettingsStore, type ClockMode } from "@/store/use-settings-store";
 import { ModeSwitcher } from "@/components/mode-switcher";
-import { SettingsPanel } from "@/components/settings-panel";
+import { ThemeSurface } from "@/components/theme-surface";
 import { ClockView } from "@/components/views/clock-view";
 import { TimerView } from "@/components/views/timer-view";
 import { StopwatchView } from "@/components/views/stopwatch-view";
@@ -18,12 +18,7 @@ import { useStopwatchStore } from "@/store/use-stopwatch-store";
 
 export function ClockShell() {
   const [mode, setMode] = useState<ClockMode>("clock");
-  const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const theme = useSettingsStore((s) => s.theme);
-  const accentId = useSettingsStore((s) => s.accent);
-  const fontId = useSettingsStore((s) => s.font);
-  const background = useSettingsStore((s) => s.background);
   const hasHydrated = useSettingsStore((s) => s.hasHydrated);
   const focusMode = useSettingsStore((s) => s.focusMode);
   const setFocusMode = useSettingsStore((s) => s.setFocusMode);
@@ -76,47 +71,13 @@ export function ClockShell() {
     return () => window.removeEventListener("keydown", onKey);
   }, [focusMode, setFocusMode]);
 
-  const chromeHidden = focusMode && !recentlyActive && !settingsOpen;
-
-  const { style, isDark } = useMemo(() => {
-    const { palette } = getTheme(theme);
-
-    const accentValue =
-      ACCENTS.find((a) => a.id === accentId)?.value || palette.accent;
-
-    const css: CSSProperties = {
-      // Color tokens consumed across the app.
-      ["--fg" as string]: palette.fg,
-      ["--muted" as string]: palette.muted,
-      ["--surface" as string]: palette.surface,
-      ["--border" as string]: palette.border,
-      ["--accent" as string]: accentValue,
-      ["--font-clock" as string]: getFont(fontId).cssVar,
-      background: buildBackground(background, palette, accentValue),
-      color: palette.fg,
-    };
-
-    return { style: css, isDark: palette.isDark };
-  }, [theme, accentId, fontId, background]);
+  const chromeHidden = focusMode && !recentlyActive;
 
   return (
     <ChromeHiddenContext.Provider value={chromeHidden}>
-    <div
-      style={style}
-      className={`clock-face relative flex min-h-dvh w-full flex-col overflow-hidden transition-colors duration-500 ${
-        background === "animated" ? "bg-animated" : ""
-      } ${chromeHidden ? "cursor-none" : ""}`}
+    <ThemeSurface
+      className={`overflow-hidden ${chromeHidden ? "cursor-none" : ""}`}
     >
-      {/* Soft vignette for depth, independent of the chosen background. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(120% 90% at 50% 0%, transparent 55%, rgba(0,0,0,0.18) 100%)",
-        }}
-      />
-
       <header
         className="relative z-10 flex items-center justify-between px-5 py-5 transition-opacity duration-500 sm:px-8"
         style={{
@@ -150,9 +111,8 @@ export function ClockShell() {
               <ExpandIcon className="h-5 w-5" />
             )}
           </button>
-          <button
-            type="button"
-            onClick={() => setSettingsOpen(true)}
+          <Link
+            href="/settings"
             aria-label="Open settings"
             className="grid h-10 w-10 place-items-center rounded-full border backdrop-blur-sm transition hover:scale-105 active:scale-95"
             style={{
@@ -162,7 +122,7 @@ export function ClockShell() {
             }}
           >
             <SettingsIcon className="h-5 w-5" />
-          </button>
+          </Link>
         </div>
       </header>
 
@@ -209,13 +169,7 @@ export function ClockShell() {
       >
         <ModeSwitcher mode={mode} onChange={setMode} />
       </footer>
-
-      <SettingsPanel
-        open={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        isDark={isDark}
-      />
-    </div>
+    </ThemeSurface>
     </ChromeHiddenContext.Provider>
   );
 }

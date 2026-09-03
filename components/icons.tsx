@@ -77,6 +77,13 @@ export const CloseIcon = (p: IconProps) => (
   </svg>
 );
 
+export const ArrowLeftIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="M19 12H5" />
+    <path d="M11 18l-6-6 6-6" />
+  </svg>
+);
+
 export const CheckIcon = (p: IconProps) => (
   <svg {...base} {...p}>
     <path d="M4 12.5 9 17.5 20 6.5" />
