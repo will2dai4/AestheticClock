@@ -75,9 +75,7 @@ export function ClockShell() {
 
   return (
     <ChromeHiddenContext.Provider value={chromeHidden}>
-    <ThemeSurface
-      className={`overflow-hidden ${chromeHidden ? "cursor-none" : ""}`}
-    >
+    <ThemeSurface className={chromeHidden ? "cursor-none" : ""}>
       <header
         className="relative z-10 flex items-center justify-between px-5 py-5 transition-opacity duration-500 sm:px-8"
         style={{

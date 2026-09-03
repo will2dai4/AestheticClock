@@ -9,16 +9,27 @@
 
 :root {
   color-scheme: dark;
+  background-color: #0b0d12;
+  background-attachment: fixed;
+  transition: background-color 500ms ease;
 }
 
 html,
 body {
   height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 body {
   margin: 0;
   font-family: var(--font-sans), system-ui, sans-serif;
+  /* Taking the body out of flow removes the elastic rubber-band entirely:
+     there is no document to drag, so the page cannot be pulled past its
+     bounds even where overscroll-behavior is ignored (older Safari, iOS). */
+  position: fixed;
+  inset: 0;
+  width: 100%;
 }
 
 /* The clock face font is driven by user settings via --font-clock. */
