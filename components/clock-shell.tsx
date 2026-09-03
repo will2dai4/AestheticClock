@@ -125,10 +125,12 @@ export function ClockShell() {
         }}
       >
         <span
-          className="select-none text-sm font-medium tracking-[0.3em] uppercase"
+          role="img"
+          aria-label="Sigma"
+          className="select-none text-lg leading-none font-medium"
           style={{ color: "var(--muted)" }}
         >
-          Lumen
+          Σ
         </span>
         <div className="flex items-center gap-2">
           <button

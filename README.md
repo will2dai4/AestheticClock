@@ -1,4 +1,4 @@
-# Lumen — Aesthetic Clock
+# SIGMA — Clock
 
 A minimal, highly customizable web app with three modes: a 24-hour **clock**, a **timer**, and a **stopwatch**. Built to make time feel calm and beautiful.
 
