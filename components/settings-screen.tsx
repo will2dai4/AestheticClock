@@ -26,8 +26,7 @@ export function SettingsScreen() {
         <Link
           href="/"
           aria-label="Back to clock"
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full border transition hover:scale-105 active:scale-95"
-          style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+          className="-ml-2 grid h-10 w-10 shrink-0 place-items-center transition hover:scale-110 active:scale-95"
         >
           <ArrowLeftIcon className="h-5 w-5" />
         </Link>

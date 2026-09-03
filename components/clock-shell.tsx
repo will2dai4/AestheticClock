@@ -89,7 +89,7 @@ export function ClockShell() {
           role="img"
           aria-label="Sigma"
           className="select-none text-lg leading-none font-medium"
-          style={{ color: "var(--muted)" }}
+          style={{ color: "var(--fg)" }}
         >
           Σ
         </span>
@@ -98,12 +98,8 @@ export function ClockShell() {
             type="button"
             onClick={toggleFullscreen}
             aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-            className="grid h-10 w-10 place-items-center rounded-full border backdrop-blur-sm transition hover:scale-105 active:scale-95"
-            style={{
-              borderColor: "var(--border)",
-              background: "var(--surface)",
-              color: "var(--fg)",
-            }}
+            className="grid h-10 w-10 place-items-center transition hover:scale-110 active:scale-95"
+            style={{ color: "var(--fg)" }}
           >
             {isFullscreen ? (
               <CompressIcon className="h-5 w-5" />
@@ -114,12 +110,8 @@ export function ClockShell() {
           <Link
             href="/settings"
             aria-label="Open settings"
-            className="grid h-10 w-10 place-items-center rounded-full border backdrop-blur-sm transition hover:scale-105 active:scale-95"
-            style={{
-              borderColor: "var(--border)",
-              background: "var(--surface)",
-              color: "var(--fg)",
-            }}
+            className="grid h-10 w-10 place-items-center transition hover:scale-110 active:scale-95"
+            style={{ color: "var(--fg)" }}
           >
             <SettingsIcon className="h-5 w-5" />
           </Link>
