@@ -85,11 +85,11 @@ export function ClockShell() {
       >
         <span
           role="img"
-          aria-label="Sigma"
+          aria-label="Psi"
           className="select-none text-lg leading-none font-medium"
           style={{ color: "var(--fg)" }}
         >
-          Σ
+          Ψ
         </span>
         <div className="flex items-center gap-2">
           <button

@@ -88,7 +88,7 @@ export const useSettingsStore = create<SettingsState>()(
       reset: () => set({ ...DEFAULTS }),
     }),
     {
-      name: "sigma-clock-settings",
+      name: "psi-clock-settings",
       partialize: ({ hasHydrated: _hasHydrated, ...rest }) => rest,
       onRehydrateStorage: () => (state) => {
         // Coerce any removed/invalid theme (e.g. the old "system") to a default.

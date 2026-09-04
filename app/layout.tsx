@@ -33,7 +33,7 @@ const fontDisplay = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "SIGMA — Clock",
+  title: "PSI — Clock",
   description:
     "A minimal, customizable clock, timer, and stopwatch. Make time beautiful.",
 };
