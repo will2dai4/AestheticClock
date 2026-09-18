@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   ACCENTS,
@@ -9,6 +10,7 @@ import {
   THEMES,
   getTheme,
 } from "@/lib/presets";
+import { parseYouTube } from "@/lib/youtube";
 import { useSettingsStore } from "@/store/use-settings-store";
 import { CheckIcon } from "@/components/icons";
 
@@ -90,6 +92,7 @@ export function SettingsForm() {
             value={s.background}
             onChange={(id) => s.setBackground(id as typeof s.background)}
           />
+          {s.background === "youtube" && <YouTubeFields />}
         </Section>
 
         <Section title="Clock format">
@@ -169,6 +172,88 @@ export function SettingsForm() {
         Reset to defaults
       </button>
     </div>
+  );
+}
+
+/**
+ * Extra controls for the YouTube background: the link itself, plus how loud
+ * and how dimmed the video should be behind the clock.
+ */
+function YouTubeFields() {
+  const [focused, setFocused] = useState(false);
+  const url = useSettingsStore((s) => s.youtubeUrl);
+  const setUrl = useSettingsStore((s) => s.setYoutubeUrl);
+  const sound = useSettingsStore((s) => s.youtubeSound);
+  const setSound = useSettingsStore((s) => s.setYoutubeSound);
+  const dim = useSettingsStore((s) => s.youtubeDim);
+  const setDim = useSettingsStore((s) => s.setYoutubeDim);
+
+  const trimmed = url.trim();
+  const invalid = trimmed.length > 0 && !parseYouTube(trimmed);
+
+  return (
+    <motion.div
+      className="flex flex-col gap-2"
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <input
+        type="url"
+        inputMode="url"
+        spellCheck={false}
+        autoComplete="off"
+        aria-label="YouTube video link"
+        aria-invalid={invalid}
+        placeholder="https://youtube.com/watch?v=..."
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        className="w-full rounded-xl border px-4 py-3 text-sm outline-none transition placeholder:opacity-50"
+        style={{
+          // Inline styles beat utility classes here, so focus is tracked in
+          // state rather than with a `focus:` variant.
+          borderColor: invalid
+            ? "#ff6b6b"
+            : focused
+              ? "var(--accent)"
+              : "var(--border)",
+          background: "var(--surface)",
+          color: "var(--fg)",
+        }}
+      />
+
+      <p className="text-xs" style={{ color: invalid ? "#ff6b6b" : "var(--muted)" }}>
+        {invalid
+          ? "That doesn't look like a YouTube link."
+          : "Paste any YouTube link and it loops behind the clock. A timestamp in the link is honored."}
+      </p>
+
+      <Toggle label="Play sound" checked={sound} onChange={setSound} />
+      {sound && (
+        <p className="text-xs" style={{ color: "var(--muted)" }}>
+          Audio starts after you click or tap the page — browsers block
+          autoplaying sound until then.
+        </p>
+      )}
+
+      <label className="flex flex-col gap-2 rounded-xl border px-4 py-3" style={{ borderColor: "var(--border)" }}>
+        <span className="flex items-center justify-between text-sm font-medium">
+          <span>Dim</span>
+          <span style={{ color: "var(--muted)" }}>{Math.round(dim * 100)}%</span>
+        </span>
+        <input
+          type="range"
+          className="accent-range w-full"
+          min={0}
+          max={0.9}
+          step={0.05}
+          value={dim}
+          onChange={(e) => setDim(Number(e.target.value))}
+        />
+      </label>
+    </motion.div>
   );
 }
 

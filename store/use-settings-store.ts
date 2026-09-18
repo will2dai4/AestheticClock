@@ -18,6 +18,14 @@ export interface SettingsState {
   background: BackgroundId;
   layout: LayoutId;
 
+  // YouTube background (used when `background` is "youtube")
+  /** Raw link as the user typed it; parsed at render time. */
+  youtubeUrl: string;
+  /** Play the video's audio. Browsers only allow this after an interaction. */
+  youtubeSound: boolean;
+  /** 0-1 scrim over the video so the time stays readable. */
+  youtubeDim: number;
+
   // Clock format
   hour12: boolean;
   showSeconds: boolean;
@@ -40,6 +48,9 @@ export interface SettingsState {
   setFont: (font: FontId) => void;
   setBackground: (background: BackgroundId) => void;
   setLayout: (layout: LayoutId) => void;
+  setYoutubeUrl: (url: string) => void;
+  setYoutubeSound: (v: boolean) => void;
+  setYoutubeDim: (v: number) => void;
   setHour12: (v: boolean) => void;
   setShowSeconds: (v: boolean) => void;
   setShowDate: (v: boolean) => void;
@@ -57,6 +68,9 @@ const DEFAULTS = {
   font: "display" as FontId,
   background: "solid" as BackgroundId,
   layout: "digital" as LayoutId,
+  youtubeUrl: "",
+  youtubeSound: false,
+  youtubeDim: 0.45,
   hour12: false,
   showSeconds: true,
   showDate: true,
@@ -77,6 +91,9 @@ export const useSettingsStore = create<SettingsState>()(
       setFont: (font) => set({ font }),
       setBackground: (background) => set({ background }),
       setLayout: (layout) => set({ layout }),
+      setYoutubeUrl: (youtubeUrl) => set({ youtubeUrl }),
+      setYoutubeSound: (youtubeSound) => set({ youtubeSound }),
+      setYoutubeDim: (youtubeDim) => set({ youtubeDim }),
       setHour12: (hour12) => set({ hour12 }),
       setShowSeconds: (showSeconds) => set({ showSeconds }),
       setShowDate: (showDate) => set({ showDate }),

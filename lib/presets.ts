@@ -164,7 +164,7 @@ export function getFont(id: FontId): FontOption {
   return FONTS.find((f) => f.id === id) ?? FONTS[0];
 }
 
-export type BackgroundId = "solid" | "gradient" | "animated";
+export type BackgroundId = "solid" | "gradient" | "animated" | "youtube";
 
 export interface BackgroundOption {
   id: BackgroundId;
@@ -175,6 +175,7 @@ export const BACKGROUNDS: BackgroundOption[] = [
   { id: "solid", label: "Solid" },
   { id: "gradient", label: "Gradient" },
   { id: "animated", label: "Animated" },
+  { id: "youtube", label: "YouTube" },
 ];
 
 /**
@@ -186,7 +187,9 @@ export function buildBackground(
   palette: ThemePalette,
   accent: string
 ): string {
-  if (style === "solid") return palette.bg;
+  // The YouTube background paints its own layer; the palette color sits
+  // underneath it while the video loads (and if it never does).
+  if (style === "solid" || style === "youtube") return palette.bg;
   if (style === "gradient") {
     return `radial-gradient(120% 120% at 15% 10%, ${tint(
       accent,
