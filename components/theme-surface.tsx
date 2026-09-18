@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, type CSSProperties, type ReactNode } from "react";
 import { ACCENTS, buildBackground, getFont, getTheme } from "@/lib/presets";
+import { YouTubeBackground } from "@/components/youtube-background";
 import { useSettingsStore } from "@/store/use-settings-store";
 
 interface ThemeSurfaceProps {
@@ -20,6 +21,9 @@ export function ThemeSurface({ children, className = "" }: ThemeSurfaceProps) {
   const accentId = useSettingsStore((s) => s.accent);
   const fontId = useSettingsStore((s) => s.font);
   const background = useSettingsStore((s) => s.background);
+  const youtubeUrl = useSettingsStore((s) => s.youtubeUrl);
+  const youtubeSound = useSettingsStore((s) => s.youtubeSound);
+  const youtubeDim = useSettingsStore((s) => s.youtubeDim);
 
   const { style, backdrop, baseColor } = useMemo(() => {
     const { palette } = getTheme(theme);
@@ -29,6 +33,7 @@ export function ThemeSurface({ children, className = "" }: ThemeSurfaceProps) {
 
     const css: CSSProperties = {
       // Color tokens consumed across the app.
+      ["--bg" as string]: palette.bg,
       ["--fg" as string]: palette.fg,
       ["--muted" as string]: palette.muted,
       ["--surface" as string]: palette.surface,
@@ -58,6 +63,13 @@ export function ThemeSurface({ children, className = "" }: ThemeSurfaceProps) {
       style={style}
       className={`clock-face relative flex h-dvh w-full flex-col overflow-hidden transition-colors duration-500 ${className}`}
     >
+      {background === "youtube" && (
+        <YouTubeBackground
+          url={youtubeUrl}
+          sound={youtubeSound}
+          dim={youtubeDim}
+        />
+      )}
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0"
